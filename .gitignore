@@ -1,0 +1,15 @@
+.venv/
+.env
+pruebas/
+__pycache__/
+.pyc
+.continue
+deleted
+data_load
+data_loaded
+qdrant_db
+/index_manifest.sqlite3*
+/indexing.log
+/chat_history.sqlite3*
+/data/*.pdf
+/data_processed/*.pdf
