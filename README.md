@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 # IA-Assist-RAG
 
 IA Assist RAG es un asistente de escritorio que permite conversar con un modelo de lenguaje local. Puedes hacer preguntas usando sus conocimientos generales y, cuando necesites información de tus propios documentos, pedirle que busque en una base de conocimiento creada a partir de archivos PDF.
-=======
-# IA Assist
-
-IA Assist es un asistente de escritorio que permite conversar con un modelo de lenguaje local. Puedes hacer preguntas usando sus conocimientos generales y, cuando necesites información de tus propios documentos, pedirle que busque en una base de conocimiento creada a partir de archivos PDF.
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 
 La aplicación ofrece una interfaz de chat con conversaciones guardadas en el equipo. También permite dictar mensajes por micrófono: el audio se transcribe y aparece en el cuadro de texto para que puedas revisarlo antes de enviarlo.
 
@@ -56,12 +50,8 @@ docker compose exec ollama ollama pull nomic-embed-text
 
 La aplicación de escritorio continúa ejecutándose en Windows y se conecta a Ollama por `http://localhost:11434` y a Qdrant por `http://localhost:6333`. Los modelos de Ollama y los datos de Qdrant persisten en volúmenes Docker. Para detener los servicios, ejecuta `docker compose down`; los volúmenes se conservan.
 
-<<<<<<< HEAD
 En Docker Desktop para Windows, la documentación de GPU passthrough para contenedores Linux cubre NVIDIA. Esta configuración no asigna una Intel ARC al contenedor, por lo que Ollama en Docker podría usar CPU. Hay que validar una ruta compatible con Intel Arc antes de contar con aceleración GPU. Para el desarollo se uso Intel ARC arquitecura Xe2 aka Battlemage, solo
 disponible su uso mediante la aplicacion de ollama desktop y SYCL.
-=======
-En Docker Desktop para Windows, la documentación de GPU passthrough para contenedores Linux cubre NVIDIA. Esta configuración no asigna una Intel Arc al contenedor, por lo que Ollama en Docker podría usar CPU. Hay que validar una ruta compatible con Intel Arc antes de contar con aceleración GPU.
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 
 Inicia Ollama y Qdrant. La aplicación espera encontrar Qdrant en `http://localhost:6333`; puedes cambiar esa dirección en `src/config.py`. Después, inicia la interfaz:
 
@@ -77,20 +67,12 @@ La primera vez que uses el micrófono se cargará el modelo Whisper `base`, lo q
 2. Con Ollama y Qdrant en ejecución, lanza el indexador desde la raíz del proyecto:
 
    ```powershell
-<<<<<<< HEAD
    python main_indexer.py
-=======
-   python -m src.modules.pdf_processor
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
    ```
 
 3. Los PDF procesados correctamente se mueven a `data_processed/`. Los que fallen permanecen en `data/` para que puedas corregir el problema e intentarlo de nuevo.
 
-<<<<<<< HEAD
 El indexador extrae texto, divide los documentos en fragmentos de 600 caracteres con 100 caracteres de solapamiento, genera embeddings con el modelo configurado y guarda los vectores en la colección `ia_context`. Verifica en Qdrant la huella, versión del proceso y la lista completa de fragmentos antes de marcar un documento como activo. `indexing.log` guarda eventos JSON con fecha, archivo y resultado; es un registro de auditoría y no determina el estado de la indexación. No se usa una base de datos de manifiesto para los PDF.
-=======
-El indexador extrae texto, divide los documentos en fragmentos de 600 caracteres con 100 caracteres de solapamiento, genera embeddings con el modelo configurado y guarda los vectores en la colección `ia_context`. El archivo `index_manifest.sqlite3` registra el nombre, hash, fecha y número de fragmentos. `indexing.log` añade una línea JSON por cada PDF con su resultado. El manifiesto detecta contenido previamente indexado incluso si el archivo vuelve a ponerse en la carpeta de entrada.
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 
 Los archivos PDF, las bases de datos locales y el registro de indexación están excluidos de Git.
 
@@ -104,7 +86,6 @@ El modelo puede responder directamente con sus conocimientos generales. Si decid
 
 ### Indexación
 
-<<<<<<< HEAD
 `src/indexing/pdf_indexer.py` coordina el flujo y delega extracción, auditoría, archivo y acceso a Qdrant en módulos con responsabilidades separadas. Calcula un SHA-256, extrae las páginas con PyPDF, divide el texto con `RecursiveCharacterTextSplitter` y genera embeddings por lotes. Los nuevos fragmentos primero se suben con estado provisional; tras comprobar en Qdrant que existen todos los índices de fragmento esperados, se activan y se retira la versión anterior. Una carga incompleta queda fuera de las búsquedas y puede reintentarse. Los PDF fallidos permanecen en la bandeja de entrada.
 
 ### Historial y concurrencia
@@ -114,17 +95,6 @@ El modelo puede responder directamente con sus conocimientos generales. Si decid
 ### Audio
 
 `src/audio/audio_recorder.py` captura audio con `sounddevice`, detecta voz y silencio, y transcribe con `faster-whisper`. La grabación finaliza al detectar silencio, al alcanzar el límite de tiempo o cuando se detiene desde la interfaz. El texto transcrito se devuelve al compositor; el usuario decide cuándo enviarlo.
-=======
-`src/modules/pdf_processor.py` recorre los PDF pendientes, calcula un SHA-256, extrae las páginas con PyPDF, divide el texto con `RecursiveCharacterTextSplitter` y genera embeddings por lotes. Los fragmentos se guardan en Qdrant con metadatos de origen, página y posición. Si el contenido ya figura en el manifiesto, el indexador evita volver a insertarlo. Los errores se registran y dejan el PDF en la bandeja de entrada.
-
-### Historial y concurrencia
-
-`src/ui/chat_store.py` persiste conversaciones, mensajes y el historial completo usado por Ollama —incluidas las interacciones con herramientas— en `chat_history.sqlite3`. Cada hilo de trabajo usa conexiones SQLite independientes. `src/ui/workers.py` ejecuta las consultas del modelo y la captura/transcripción de audio fuera del hilo de interfaz.
-
-### Audio
-
-`src/modules/audio_recorder.py` captura audio con `sounddevice`, detecta voz y silencio, y transcribe con `faster-whisper`. La grabación finaliza al detectar silencio, al alcanzar el límite de tiempo o cuando se detiene desde la interfaz. El texto transcrito se devuelve al compositor; el usuario decide cuándo enviarlo.
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 
 ## Estructura del proyecto
 
@@ -133,7 +103,6 @@ El modelo puede responder directamente con sus conocimientos generales. Si decid
 ├── data/                    # PDF pendientes de indexación
 ├── data_processed/          # PDF indexados correctamente
 ├── src/
-<<<<<<< HEAD
 │   ├── audio/               # Captura, transcripción y salida de voz
 │   ├── gui/                 # Ventana, historial y trabajadores Qt
 │   ├── health/              # Comprobaciones de servicios externos
@@ -143,12 +112,6 @@ El modelo puede responder directamente con sus conocimientos generales. Si decid
 │   └── rag/                 # Coordinación de recuperación RAG
 ├── main.py                  # Inicio de la aplicación
 |── main_indexer.py          # Cuando tenga pdfs en data, ejecute este main para indexarlos
-=======
-│   ├── modules/             # Ollama, herramientas, RAG, PDF y audio
-│   ├── qdrant/              # Conexión, embeddings y búsquedas vectoriales
-│   └── ui/                  # Ventana, persistencia del chat y trabajadores
-├── main.py                  # Inicio de la aplicación
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 └── requirements.txt
 ```
 
@@ -175,11 +138,7 @@ Durante esta colaboración se trabajó en:
 
 - El flujo de tool calling para que Ollama decida cuándo consultar la herramienta RAG y pueda responder también sin consultar documentos.
 - La persistencia del historial del modelo por conversación.
-<<<<<<< HEAD
 - El flujo de indexación de PDF desde `data/`, verificación de integridad directamente en Qdrant, registro de actividad y archivo en `data_processed/`.
-=======
-- El flujo de indexación de PDF desde `data/`, con manifiesto SQLite, registro de actividad y archivo en `data_processed/`.
->>>>>>> 62b0e5e12e28d4fa64463c9d6bf708e53378ac46
 - La interfaz de escritorio tipo chat, las conversaciones persistentes y el dictado de voz revisable antes del envío.
 - La organización y configuración asociadas a esos cambios.
 
